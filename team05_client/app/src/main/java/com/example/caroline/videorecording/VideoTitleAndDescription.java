@@ -1,5 +1,6 @@
 package com.example.caroline.videorecording;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -51,11 +52,13 @@ public class VideoTitleAndDescription extends AppCompatActivity {
                 SendToServer sendToServer = new SendToServer(Variables.getTitle(),Variables.getDescription(),Variables.getListFilePath(), VideoTitleAndDescription.this);
                 sendToServer.execute();
 
-                /*
+
                 Intent returnIntent = new Intent(VideoTitleAndDescription.this, MainActivity.class);
-                startActivity(returnIntent);*/
+                startActivity(returnIntent);
             }
         });
+
+        // add bouton return
 
     }
 

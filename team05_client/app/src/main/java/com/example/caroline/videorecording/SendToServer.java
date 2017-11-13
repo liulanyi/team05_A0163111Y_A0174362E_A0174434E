@@ -36,7 +36,7 @@ public class SendToServer extends AsyncTask<Void, String, String> {
     private Context context;
 
     private ArrayList<String> listFilePath;
-    private ArrayList<String> listFilePathNotUpload;
+
 
 
     private String URLnew = "http://monterosa.d2.comp.nus.edu.sg/~team05/new.php"; // POST, Json (title + descritpion)
@@ -51,9 +51,7 @@ public class SendToServer extends AsyncTask<Void, String, String> {
         this.title=title;
         this.description=description;
         this.listFilePath = listFilePath;
-        this.listFilePathNotUpload=listFilePath;
         this.context = context;
-        numberOfSegmentsUploaded = 0;
     }
 
 
@@ -65,11 +63,12 @@ public class SendToServer extends AsyncTask<Void, String, String> {
     @Override
     protected void onPostExecute(String string){
         Toast.makeText(context, string, Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
     protected String doInBackground(Void... arg0) {
-        //Variables.setSending(true);
+        numberOfSegmentsUploaded = 0;
         // try to connect to the server
         deleteTempFiles(Variables.getFilePath());
         id = POST(URLnew, title, description);
@@ -83,36 +82,33 @@ public class SendToServer extends AsyncTask<Void, String, String> {
 
         numberOfSegments = listFilePath.size();
         System.out.println("NNNNNNNNNNNNNNNNN " + numberOfSegments);
-        File copy = null ;
+
         // rename the videos
-        for (int i=0; i<numberOfSegments; i++){
-            try {
-                System.out.println("LLLLLLLLLLLLL " + listFilePath);
-                System.out.println("LLLLLLLLLLLLL " + listFilePathNotUpload);
-                System.out.println(listFilePath.get(i));
-                copy = exportFile(listFilePath.get(i), Variables.getWorkingPath()+ "/" + id + "-" + (i+1) + ".mp4");
-                listFilePath.set(i, Variables.getWorkingPath() + "/" + id + "-" + (i + 1) + ".mp4");
-                deleteTempFiles(listFilePath.get(i));
-                //System.out.println(copy.getPath());
+        renameAllSegment(id, numberOfSegments);
 
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            //listFilePath.set(i, Variables.getWorkingPath() + "/" + id + "-" + (i + 1) + ".mp4");
+        for (int i=numberOfSegmentsUploaded; i<numberOfSegments; i++){
 
-            String response = POST(URLupload, copy.getPath());
+            System.out.println("LLLLLLLLLLLLL " + listFilePath);
+
+            String response = POST(URLupload, listFilePath.get(i));
             System.out.println("RESPONSEEEEEEE" + " : " + response);
-            if (response.startsWith("OK")){
-                deleteTempFiles(copy.getPath());
-                listFilePathNotUpload.remove(copy.getAbsolutePath());
-                System.out.println("liiisttt : " + listFilePathNotUpload);
+            if (response.startsWith("OK") || response.startsWith("Sorry, file already exists")){
+                //listFilePathUpload.add(copy.getAbsolutePath());
+                deleteTempFiles(listFilePath.get(i));
+                //System.out.println("liiisttt : " + listFilePathUpload);
                 numberOfSegmentsUploaded +=1;
-                publishProgress("segment "+i+" has been uploaded");
+                publishProgress("segment "+(i+1)+" has been uploaded");
                 //Toast.makeText(context, "segment "+i+" has been uploaded",Toast.LENGTH_SHORT).show();
             }
             else {
-                publishProgress("segment "+i+" has not been uploaded");
-
+                publishProgress("segment " + (i + 1) + " has not been uploaded");
+                i--;
+                try {
+                    Thread.sleep(3000);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                continue;
                 //Toast.makeText(context, "segment "+i+" has not been uploaded",Toast.LENGTH_SHORT).show();
             }
             /*String[] list = response.split(" ");
@@ -130,7 +126,7 @@ public class SendToServer extends AsyncTask<Void, String, String> {
             Variables.setResponseUpload("Your file has been uploaded");
         } else {
             //publishProgress("Sorry, your file has not been uploaded. Please check your wifi connection");
-            Variables.setResponseUpload("Sorry, your file has not been uploaded. Please check your wifi connection");
+            Variables.setResponseUpload("Sorry, your file has not been uploaded. Please check your wifi connection and send ");
         }
 
         //deleteTempFiles(Variables.getWorkingPath());
@@ -141,6 +137,22 @@ public class SendToServer extends AsyncTask<Void, String, String> {
         return Variables.getResponseUpload();
     }
 
+    private void renameAllSegment (String id, int numberOfSegments){
+        for (int i=0 ; i<numberOfSegments; i++){
+            File copy = null ;
+            try {
+                System.out.println("LLLLLLLLLLLLL " + listFilePath);
+                System.out.println(listFilePath.get(i));
+                copy = exportFile(listFilePath.get(i), Variables.getWorkingPath()+ "/" + id + "-" + (i+1) + ".mp4");
+                deleteTempFiles(listFilePath.get(i));
+                //System.out.println(copy.getPath());
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            listFilePath.set(i, Variables.getWorkingPath() + "/" + id + "-" + (i + 1) + ".mp4");
+        }
+    }
 
     private File exportFile(String src, String dst) throws IOException {
 
@@ -254,6 +266,7 @@ public class SendToServer extends AsyncTask<Void, String, String> {
         }*/
 
         try{
+
             FileInputStream inputStream = new FileInputStream(file);
 
             URL url = new URL(urlString);

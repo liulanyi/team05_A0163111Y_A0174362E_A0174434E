@@ -145,17 +145,16 @@ public class SegmentVideos {
             for (Track track : tracks) {
                 long currentSample =  0;
                 double currentTime = 0 ;
-                double lastTime = 0;
                 long startSample = 0;
                 long endSample = 0;
 
                 for (int j = 0; j < track.getSampleDurations().length; j++) {
                     long delta = track.getSampleDurations()[j];
-                    if (currentTime <= startTime) { //currentTime > lastTime &&
+                    if (currentTime <= startTime) {
                         // current sample is still before the new starttime
                         startSample = currentSample;
                     }
-                    if (currentTime <= endTime) { //currentTime > lastTime &&
+                    if (currentTime <= endTime) {
                         // current sample is after the new start time and still before the new endtime
                         endSample = currentSample;
                     } else {
