@@ -31,19 +31,15 @@ public class SegmentVideos {
         double startTime = 0 ;
         double splitDuration = 3.0 ;
         try {
-            //duration = getDuration(tracks.get(0)) / tracks.get(0).getTrackMetaData().getTimescale();
-
             // duration in seconds
             duration = getDuration(Variables.getFilePath());
             numberOfSmallVideos = (int) (duration / 3);
-            System.out.println("DDDDDDDDDDD");
-            System.out.println(duration);
-            System.out.println(numberOfSmallVideos);
 
+            // Arraylist that will contains all the segments filepaths
             ArrayList<String> listNameOf3sVideos = new ArrayList<String>();
 
+            // segmentation of the video
             for (int num = 0; num < numberOfSmallVideos; num++) {
-                System.out.println("START and END " + startTime + " " + (startTime + splitDuration));
                 if (startTime == 0){
                     cutVideo3sec(startTime, startTime+splitDuration, num, listNameOf3sVideos);
                     startTime += splitDuration;
@@ -58,14 +54,14 @@ public class SegmentVideos {
             // last part of the video, which duration is less than 3 sec
             cutVideo3sec(startTime+1, duration, numberOfSmallVideos, listNameOf3sVideos);
 
+
             Variables.setListFilePath(listNameOf3sVideos);
-            System.out.println("LISTTTTTT");
-            System.out.println(listNameOf3sVideos);
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
+    // getDuration method that returns the duration of the video in second
     protected static double getDuration(String filename) {
         try{
             IsoFile isoFile = new IsoFile(filename);

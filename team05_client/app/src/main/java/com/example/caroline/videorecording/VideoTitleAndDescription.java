@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class VideoTitleAndDescription extends AppCompatActivity {
 
@@ -35,9 +34,6 @@ public class VideoTitleAndDescription extends AppCompatActivity {
 
         enterBtn = (Button) findViewById(R.id.enter);
 
-
-
-
         enterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,19 +43,17 @@ public class VideoTitleAndDescription extends AppCompatActivity {
                 Variables.setTitle(title);
                 Variables.setDescription(description);
 
-                Toast.makeText(VideoTitleAndDescription.this, "Title : "+ title + " and Description : " + description, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(VideoTitleAndDescription.this, "Title : "+ title + " and Description : " + description, Toast.LENGTH_SHORT).show();
 
+                // we send the information to the server
                 SendToServer sendToServer = new SendToServer(Variables.getTitle(),Variables.getDescription(),Variables.getListFilePath(), VideoTitleAndDescription.this);
                 sendToServer.execute();
 
-
+                // return to the main activity
                 Intent returnIntent = new Intent(VideoTitleAndDescription.this, MainActivity.class);
                 startActivity(returnIntent);
             }
         });
-
-        // add bouton return
-
     }
 
 }

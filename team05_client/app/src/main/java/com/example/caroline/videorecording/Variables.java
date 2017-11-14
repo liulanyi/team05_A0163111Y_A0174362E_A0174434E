@@ -18,10 +18,7 @@ public class Variables {
     private static String filePathWithoutExt;
 
     private static String responseUpload = null;
-
     private static Context context ;
-
-    private static boolean sending = false ;
 
     // Getter and Setter of title
     public static String getTitle(){return title;}
@@ -35,23 +32,25 @@ public class Variables {
     public static String getFilePath() {return filePath;}
     public static void setFilePath(String filePath) {Variables.filePath = filePath;}
 
+    // Getter and Setter of listFilepath
     public static ArrayList<String> getListFilePath() {return listFilePath;}
     public static void setListFilePath(ArrayList<String> listFilePath) {Variables.listFilePath = listFilePath;}
 
+    // Getter and Setter of workingPath
     public static String getWorkingPath(){return workingPath;}
     public static void setWorkingPath(String workingPath){Variables.workingPath = workingPath;}
 
+    // Getter and Setter of filePathWithoutExt
     public static String getFilePathWithoutExt(){return filePathWithoutExt;}
     public static void setFilePathWithoutExt(String filePathWithoutExt){Variables.filePathWithoutExt = filePathWithoutExt;}
 
+    // Getter and Setter of responseUpload
     public static String getResponseUpload(){return responseUpload;}
     public static void setResponseUpload(String responseUpload){Variables.responseUpload = responseUpload;}
 
+    // Getter and Setter of context
     public static Context getContext() {return context;}
     public static void setContext(Context context) {Variables.context = context;}
-
-    //public static boolean getSending(){return sending;}
-    //public static void setSending(boolean sending){Variables.sending = sending;}
 
 }
 

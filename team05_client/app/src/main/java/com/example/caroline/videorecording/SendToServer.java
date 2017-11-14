@@ -32,21 +32,17 @@ public class SendToServer extends AsyncTask<Void, String, String> {
     private int numberOfSegments;
     private int numberOfSegmentsUploaded;
 
-
     private Context context;
-
     private ArrayList<String> listFilePath;
 
+    // URL to post the title and descritpion
+    private String URLnew = "http://monterosa.d2.comp.nus.edu.sg/~team05/new.php";
+    // URL to post the video by giving the filepath
+    private String URLupload = "http://monterosa.d2.comp.nus.edu.sg/~team05/upload.php";
 
+    private String id = null;
 
-    private String URLnew = "http://monterosa.d2.comp.nus.edu.sg/~team05/new.php"; // POST, Json (title + descritpion)
-
-    private String URLupload = "http://monterosa.d2.comp.nus.edu.sg/~team05/upload.php"; //
-
-    public boolean hasResponseChanged = false ;
-
-    private String id ;
-
+    // Constructor
     public SendToServer(String title, String description, ArrayList<String> listFilePath, Context context){
         this.title=title;
         this.description=description;
@@ -69,7 +65,7 @@ public class SendToServer extends AsyncTask<Void, String, String> {
     @Override
     protected String doInBackground(Void... arg0) {
         numberOfSegmentsUploaded = 0;
-        // try to connect to the server
+
         deleteTempFiles(Variables.getFilePath());
         id = POST(URLnew, title, description);
 
@@ -77,28 +73,18 @@ public class SendToServer extends AsyncTask<Void, String, String> {
             Variables.setResponseUpload("Sorry, your file has not been uploaded. Please check your wifi connection");
         }
 
-        //String responseUploadOk = "OK" ;
-
-
         numberOfSegments = listFilePath.size();
-        System.out.println("NNNNNNNNNNNNNNNNN " + numberOfSegments);
 
         // rename the videos
         renameAllSegment(id, numberOfSegments);
 
         for (int i=numberOfSegmentsUploaded; i<numberOfSegments; i++){
-
-            System.out.println("LLLLLLLLLLLLL " + listFilePath);
-
             String response = POST(URLupload, listFilePath.get(i));
-            System.out.println("RESPONSEEEEEEE" + " : " + response);
+
             if (response.startsWith("OK") || response.startsWith("Sorry, file already exists")){
-                //listFilePathUpload.add(copy.getAbsolutePath());
                 deleteTempFiles(listFilePath.get(i));
-                //System.out.println("liiisttt : " + listFilePathUpload);
                 numberOfSegmentsUploaded +=1;
                 publishProgress("segment "+(i+1)+" has been uploaded");
-                //Toast.makeText(context, "segment "+i+" has been uploaded",Toast.LENGTH_SHORT).show();
             }
             else {
                 publishProgress("segment " + (i + 1) + " has not been uploaded");
@@ -109,31 +95,15 @@ public class SendToServer extends AsyncTask<Void, String, String> {
                     e.printStackTrace();
                 }
                 continue;
-                //Toast.makeText(context, "segment "+i+" has not been uploaded",Toast.LENGTH_SHORT).show();
             }
-            /*String[] list = response.split(" ");
-            String responseServer = list[0];
-            System.out.println("RESPONSEEEEEEE" + " : " + responseServer);
-*/
-            // if one segment has not been uploaded well
-            //if (responseServer != responseUploadOk){
-            //    setHasResponseChanged(true);
-            //}
 
         }
         if (numberOfSegmentsUploaded==numberOfSegments){
-            //publishProgress("Your file has been uploaded");
             Variables.setResponseUpload("Your file has been uploaded");
         } else {
-            //publishProgress("Sorry, your file has not been uploaded. Please check your wifi connection");
-            Variables.setResponseUpload("Sorry, your file has not been uploaded. Please check your wifi connection and send ");
+            Variables.setResponseUpload("Sorry, your file has not been uploaded.");
         }
 
-        //deleteTempFiles(Variables.getWorkingPath());
-
-        //Variables.setSending(false);
-
-        //Toast.makeText(context, Variables.getResponseUpload(),Toast.LENGTH_SHORT).show();
         return Variables.getResponseUpload();
     }
 
@@ -141,19 +111,18 @@ public class SendToServer extends AsyncTask<Void, String, String> {
         for (int i=0 ; i<numberOfSegments; i++){
             File copy = null ;
             try {
-                System.out.println("LLLLLLLLLLLLL " + listFilePath);
-                System.out.println(listFilePath.get(i));
                 copy = exportFile(listFilePath.get(i), Variables.getWorkingPath()+ "/" + id + "-" + (i+1) + ".mp4");
                 deleteTempFiles(listFilePath.get(i));
-                //System.out.println(copy.getPath());
 
             }catch (Exception e){
                 e.printStackTrace();
             }
-            listFilePath.set(i, Variables.getWorkingPath() + "/" + id + "-" + (i + 1) + ".mp4");
+            // change the filename in the ArrayList that contains the segment filepaths
+            listFilePath.set(i, copy.getAbsolutePath());
         }
     }
 
+    // export the file. We give the source and the destination filepaths
     private File exportFile(String src, String dst) throws IOException {
 
         File expFile = new File(dst);
@@ -179,6 +148,7 @@ public class SendToServer extends AsyncTask<Void, String, String> {
         return expFile;
     }
 
+    // POST method to send the title and description
     public static String POST(String urlString, String title, String description) {
         String id = "";
         String inputLine;
@@ -196,8 +166,6 @@ public class SendToServer extends AsyncTask<Void, String, String> {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("title", title);
             jsonObject.put("description", description);
-
-            System.out.println("JSONNNN : " + jsonObject.toString());
 
             OutputStream outputStream = connectionNew.getOutputStream();
             outputStream.write(jsonObject.toString().getBytes());
@@ -217,21 +185,13 @@ public class SendToServer extends AsyncTask<Void, String, String> {
             reader.close();
             in.close();
 
-            //connectionNew.disconnect();
             //Set our result equal to our stringBuilder
             id = stringBuilder.toString();
-            System.out.println("IIDDDDDD " + id);
 
-            return id;
+            return id; // return the id to rename the segments
 
         } catch (Exception e) {
             e.printStackTrace();
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
 
         }finally {
             if(connectionNew != null) // Make sure the connection is not null.
@@ -245,7 +205,6 @@ public class SendToServer extends AsyncTask<Void, String, String> {
         String result = "";
         String inputLine;
 
-        //String filePath = Variables.getWorkingPath() + "/"+ fileName ;
         File file = new File(filePath);
         DataOutputStream dos = null;
 
@@ -259,11 +218,6 @@ public class SendToServer extends AsyncTask<Void, String, String> {
         HttpURLConnection connectionUpLoad = null;
 
         int serverResponseCode;
-
-        /*if (!file.isFile()) {
-            Log.e("Huzza", "Source File Does not exist");
-            return null;
-        }*/
 
         try{
 
@@ -279,12 +233,6 @@ public class SendToServer extends AsyncTask<Void, String, String> {
             connectionUpLoad.setRequestProperty("ENCTYPE", "multipart/form-data");
             connectionUpLoad.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
             connectionUpLoad.setRequestProperty("fileToUpload",filePath);
-
-            //OutputStreamWriter out = new OutputStreamWriter(connectionUpLoad.getOutputStream());
-            //out.write(filePath); // TODO Maybe to change
-
-            //OutputStream out = connectionUpLoad.getOutputStream();
-            //out.write(file.getBytes());
 
             dos = new DataOutputStream(connectionUpLoad.getOutputStream());
 
@@ -338,7 +286,6 @@ public class SendToServer extends AsyncTask<Void, String, String> {
 
                 connectionUpLoad.disconnect();
 
-
                 return result ;
             }
             else {
@@ -347,12 +294,6 @@ public class SendToServer extends AsyncTask<Void, String, String> {
 
         }catch (Exception e){
             e.printStackTrace();
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
         }finally {
             if(connectionUpLoad != null) // Make sure the connection is not null.
                 connectionUpLoad.disconnect();
@@ -363,7 +304,6 @@ public class SendToServer extends AsyncTask<Void, String, String> {
 
     private void deleteTempFiles(String filePath){
         File file = new File(filePath);
-        //File[] files = root.listFiles();
         if (file != null){
             file.delete();
         }

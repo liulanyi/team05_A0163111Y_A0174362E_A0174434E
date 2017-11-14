@@ -21,12 +21,13 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     private SurfaceHolder mSurHolder ;
     private VideoView mVideoView ;
+    private Camera mCamera = null;
+    private MediaRecorder recorder = null;
 
     File savedVideo = null;
     String filePath = null ;
-
-    private Camera mCamera = null;
-
+    private String workingPath ;
+    private String filePathWithoutExt ;
 
     // buttons
     private Button startBtn = null ;
@@ -38,11 +39,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     private static final String TAG = "RecordVideo";
 
-    private MediaRecorder recorder = null;
-
-    private String workingPath ;
-    private String filePathWithoutExt ;
-
     private boolean CameraReleased = false;
 
     @Override
@@ -50,8 +46,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // set the workingPath
         this.workingPath = Environment.getExternalStorageDirectory() + "/Movies";
         Variables.setWorkingPath(workingPath);
+
         // references of the buttons
         startBtn = (Button) findViewById(R.id.start);
         stopBtn = (Button) findViewById(R.id.stop);
@@ -61,11 +59,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         recordingMsg = (TextView) findViewById(R.id.recording);
         mVideoView = (VideoView) this.findViewById(R.id.videoView);
 
-
-        System.out.println("LIST : "+ Variables.getListFilePath());
         Variables.setContext(MainActivity.this);
     }
 
+    // method to know which function to call according to the button that has been clicked
     public void buttonTapped (View view){
         switch (view.getId()){
             case R.id.start:
@@ -108,23 +105,20 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             savedVideo.delete();
 
         filePath = savedVideo.getPath();
-        System.out.println("FILEPATH : " + filePath);
         Variables.setFilePath(filePath);
 
         filePathWithoutExt = (filePath != null) ? filePath.substring(0, filePath.indexOf('.')) : "";
         Variables.setFilePathWithoutExt(filePathWithoutExt);
 
         try {
-            //mCamera.stopPreview();
             recorder = new MediaRecorder();
             recorder.setCamera(mCamera);
             mCamera.unlock();
 
+            // video Settings
             recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
             recorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
             recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-
-            // video Settings
 
             recorder.setVideoSize(1280, 720); // 720p
             recorder.setVideoFrameRate(30) ; // 30 fps
@@ -163,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     }
 
     private void playRecording() {
+        // release camera and recorder
         releaseRecorder();
         releaseCamera();
         MediaController mc = new MediaController(this);
@@ -177,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         mVideoView.stopPlayback();
     }
 
-
+    // segment the video
     private void cutVideo() {
         if (!CameraReleased) {
             releaseRecorder();
@@ -187,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         segmentVideos.segmentVideo();
     }
 
+    // release the recorder
     private void releaseRecorder() {
         if (recorder != null){
             recorder.release();
@@ -194,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         }
     }
 
+    // release the camera
     private void releaseCamera() {
         if (mCamera != null){
             try {
@@ -217,9 +214,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             Toast.makeText(getApplicationContext(), "surfaceCreated : " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
-        //while (Variables.getSending()==true){
-        //   startBtn.setEnabled(false);
-        //}
         startBtn.setEnabled(true);
     }
 
@@ -245,8 +239,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     @Override
     protected void onResume(){
-        //Log.v(TAG, "in onResume");
         super.onResume();
+        // all buttons are unenable to access until initCamera has been done
         startBtn.setEnabled(false);
         stopBtn.setEnabled(false);
         reviewBtn.setEnabled(false);
@@ -278,7 +272,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private boolean initCamera() {
         try{
             mCamera = Camera.open();
-            Camera.Parameters camParams = mCamera.getParameters();
             mCamera.lock();
             mSurHolder = mVideoView.getHolder();
             mSurHolder.addCallback(this);
