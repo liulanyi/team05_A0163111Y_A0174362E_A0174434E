@@ -53,12 +53,12 @@ public class SendToServer extends AsyncTask<Void, String, String> {
 
     @Override
     protected void onProgressUpdate(String... string){
-        Toast.makeText(context, string[0], Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, string[0], Toast.LENGTH_LONG).show();
     }
 
     @Override
     protected void onPostExecute(String string){
-        Toast.makeText(context, string, Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, string, Toast.LENGTH_LONG).show();
 
     }
 
@@ -74,6 +74,7 @@ public class SendToServer extends AsyncTask<Void, String, String> {
         }
 
         numberOfSegments = listFilePath.size();
+        publishProgress("There are "+numberOfSegments+" segments");
 
         // rename the videos
         renameAllSegment(id, numberOfSegments);

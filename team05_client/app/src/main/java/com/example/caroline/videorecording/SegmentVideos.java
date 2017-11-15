@@ -34,7 +34,7 @@ public class SegmentVideos {
             // duration in seconds
             duration = getDuration(Variables.getFilePath());
             numberOfSmallVideos = (int) (duration / 3);
-
+            
             // Arraylist that will contains all the segments filepaths
             ArrayList<String> listNameOf3sVideos = new ArrayList<String>();
 
