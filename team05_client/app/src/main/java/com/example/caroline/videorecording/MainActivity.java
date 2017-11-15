@@ -37,8 +37,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private Button sendBtn = null;
     private TextView recordingMsg ;
 
-    private static final String TAG = "RecordVideo";
-
     private boolean CameraReleased = false;
 
     @Override
