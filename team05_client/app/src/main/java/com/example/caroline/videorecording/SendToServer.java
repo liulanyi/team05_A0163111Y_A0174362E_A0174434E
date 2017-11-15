@@ -87,10 +87,10 @@ public class SendToServer extends AsyncTask<Void, String, String> {
                 publishProgress("segment "+(i+1)+" has been uploaded");
             }
             else {
-                publishProgress("segment " + (i + 1) + " has not been uploaded");
+                //publishProgress("segment " + (i + 1) + " has not been uploaded");
                 i--;
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(5000);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
