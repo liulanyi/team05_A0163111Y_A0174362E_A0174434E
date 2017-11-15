@@ -54,7 +54,7 @@ $user_agent = $_SERVER['HTTP_USER_AGENT'];
 $log_file = "log/new.txt";
 $current_log = file_get_contents($log_file);
 $time = date("Y-m-d h:i:sa");
-$current_log .= $time ." : File name ". $name . " status " . $is_JSON ." from IP: ".$IP_address."\n\tThe user used: ".$user_agent ."\n";
+$current_log .= $time ." : File: ". $title . ", status " . $is_JSON .", from IP: ".$IP_address."\n\tThe uploader used: ".$user_agent ."\n";
 file_put_contents($log_file,$current_log);
 
 

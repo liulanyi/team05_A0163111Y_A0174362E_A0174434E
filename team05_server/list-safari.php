@@ -43,7 +43,7 @@ while($row = mysqli_fetch_array($result)){
 	// We hide the link in the title of the videos
 	echo "<a href=" . $row['url_HLS'] . ">" . $row['title'] . "</a>";
 	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-	echo "</td><td>" . $row['description'] . "</td></tr>";  //$row['index'] the index here is a field name
+	echo "</td><td>" . $row['description'] . "</td></tr>";
 }
 echo "</table>";
 

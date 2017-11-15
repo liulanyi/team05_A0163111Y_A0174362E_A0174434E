@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Team 5 home</title>
+	<meta charset="utf-8" />
+</head>
+<h2>Hello and welcome to our team streaming platform !</h2>
+<body>
+<p>
+To upload a new video acces the "new.php" page and provide a title and a description of the video in JSON. The page will return your video ID <br>
+The parts of the video should be named video_ID-part_number.mp4 and can be uploaded using the "upload.php" page (the "upload" page can be used to manually upload it)<br>
+<br>
+To view all the available videos access the "video-info-DASH.php" page it will return a JSON containing the video title, url of the DASH playlist and description of all the available videos. <br>
+The url returned are the url of the mpd playlist <br>
+<br>
+If you want to play the videos form <b>Safari</b> go to the page 
+<a href="http://monterosa.d2.comp.nus.edu.sg/~team05/list-safari.php">list-safari.php</a>
+which will display the available videos, this page also provides a link to the m3u8 playlist which make them playable on a Safari web browser.<br>
+<br>
+</p>
+<p>
+This server also contains: 
+<ul> 
+	<li>A mpd test file name
+	<a href="http://monterosa.d2.comp.nus.edu.sg/~team05/mpdGenerator.mpd">mpdGenerator.mpd</a>
+	<br></li>
+
+	<li>A mp4 video for testing
+	<a href="http://monterosa.d2.comp.nus.edu.sg/~team05/Star-Wars.mp4">Star-Wars.mp4</a>
+	<br></li>
+
+	<li>An <a href="http://monterosa.d2.comp.nus.edu.sg/~team05/id.php">id.php</a> 
+	page which gives you some infos about yourself that can be used to test if the server is online. <br>
+	</li>
+
+	<li>A 
+	<a href="http://monterosa.d2.comp.nus.edu.sg/~team05/dash.html">dash.html</a>
+	page which uses an outside tool to play a given mpd file. <br>
+	</li>
+
+	<li>A "video-info-HLS.php" page which does the same thing as "video-info-DASH" but with the url of the m3u8 playlist <br>
+	</li>
+</ul>
+</p>
+
+</body>
+</html>
